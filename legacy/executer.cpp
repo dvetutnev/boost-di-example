@@ -1,5 +1,9 @@
 #include "executer.h"
 
+#include <algorithm>
+#include <cctype>
+
+
 Executer::Executer(const Ssid& ssid, const Id& id)
     :
       ssid{ssid},
@@ -12,9 +16,17 @@ Executer::Executer(const Ssid& ssid, const Id& id)
 {}
 
 void Executer::process(const std::string& data, std::function<void(const std::string&)> cb) {
-    auto task = [data, cb]() {
-        cb(data);
+    auto task = [data, cb, this]() {
+        std::string result;
+        std::transform(std::begin(data), std::end(data), std::back_inserter(result),
+                       [](char c) -> char { return (std::islower(c)) ? std::toupper(c) : std::tolower(c); });
+
+        std::string tail = '[' + this->ssid.value + '-' + this->id.value + ']';
+        result += ' ' + tail;
+
+        cb(result);
     };
+
     ioContext.post(task);
 }
 
