@@ -1,7 +1,7 @@
 #include "executer.h"
+#include "async_result.h"
 
 #include <gtest/gtest.h>
-#include <future>
 
 
 TEST(Executer, _) {
@@ -10,13 +10,16 @@ TEST(Executer, _) {
 
     Executer executer{ssid, id};
 
-    std::promise<std::string> promise;
-    auto future = promise.get_future();
-    auto handler = [&promise] (const std::string& result) {
-        promise.set_value(result);
+    IoContextWrapper ioContext;
+    auto [promise, future] = AsyncResult::create(ioContext);
+    auto cb = [promise = promise] (const std::string& result) mutable {
+        promise(result);
     };
 
-    executer.process("AbCd", handler);
+    executer.process("AbCd", cb);
+
+    ioContext.run();
+
     std::string result = future.get();
     executer.stop();
 
