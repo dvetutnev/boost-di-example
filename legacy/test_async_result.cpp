@@ -6,7 +6,7 @@
 
 TEST(AsyncResult, simple) {
     IoContextWrapper ioContext;
-    auto [promise, future] = AsyncPromise::create(ioContext);
+    auto [promise, future] = AsyncResult::create(ioContext);
 
     promise("rESULT");
     ioContext.run();
@@ -16,7 +16,7 @@ TEST(AsyncResult, simple) {
 
 TEST(AsyncResult, thread) {
     IoContextWrapper ioContext;
-    auto [promise, future] = AsyncPromise::create(ioContext);
+    auto [promise, future] = AsyncResult::create(ioContext);
 
     auto worker = [promise = promise]() mutable {
         promise("ReSuLt");
@@ -32,8 +32,8 @@ TEST(AsyncResult, thread) {
 TEST(AsyncResult, threads) {
     IoContextWrapper ioContext;
 
-    auto [promise1, future1] = AsyncPromise::create(ioContext);
-    auto [promise2, future2] = AsyncPromise::create(ioContext);
+    auto [promise1, future1] = AsyncResult::create(ioContext);
+    auto [promise2, future2] = AsyncResult::create(ioContext);
 
     auto worker1 = [promise = promise1]() mutable {
         promise("result1");

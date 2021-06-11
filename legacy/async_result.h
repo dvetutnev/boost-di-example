@@ -46,17 +46,17 @@ private:
     std::size_t workCount = 0;
 };
 
-struct AsyncPromise
+struct AsyncResult
 {
     using Signature = void (boost::system::error_code, const std::string&);
     using CompletionToken = std::decay_t<decltype(boost::asio::use_future)>;
 
-    using AsyncResult = boost::asio::async_result<CompletionToken, Signature>;
-    using AsyncHandler = AsyncResult::completion_handler_type;
+    using Result = boost::asio::async_result<CompletionToken, Signature>;
+    using Handler = Result::completion_handler_type;
 
     static auto create(IoContextWrapper& ioContext) {
-        AsyncHandler asyncHandler{boost::asio::use_future};
-        AsyncResult asyncResult{asyncHandler};
+        Handler asyncHandler{boost::asio::use_future};
+        Result asyncResult{asyncHandler};
 
         ioContext.addWork();
         auto promise = [&ioContext, asyncHandler](const std::string& message) mutable {
