@@ -34,3 +34,28 @@ TEST(Group, severalId) {
     EXPECT_TRUE(boost::algorithm::starts_with(result2, "rTYUIO"));
     EXPECT_TRUE(boost::algorithm::ends_with(result2, "[Casiopea-1]"));
 }
+
+TEST(Group, ringId) {
+    Group group{Ssid{"Fornax"}, 2};
+
+    IoContextWrapper ioContext;
+
+    Executer& dummy1 = group.getExecuter();
+    Executer& dummy2 = group.getExecuter();
+
+    Executer& executer = group.getExecuter();
+
+    auto [promise, future] = AsyncResult::create(ioContext);
+    auto handler = [p = promise](const std::string& result) mutable {
+        p(result);
+    };
+    executer.process("zxCvBnm", handler);
+
+    ioContext.run();
+    group.stopAll();
+
+    std::string result = future.get();
+
+    EXPECT_TRUE(boost::algorithm::ends_with(result, "[Fornax-0]"));
+    EXPECT_TRUE(boost::algorithm::starts_with(result, "ZXcVbNM"));
+}

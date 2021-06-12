@@ -2,7 +2,7 @@
 
 #include "executer.h"
 
-#include <vector>
+#include <list>
 #include <memory>
 
 
@@ -18,7 +18,9 @@ private:
     const Ssid ssid;
     const std::size_t maxSize;
 
-    std::size_t nextId;
+    std::size_t currentId;
 
-    std::vector<std::unique_ptr<Executer>> instances;
+    using Container = std::list<std::unique_ptr<Executer>>;
+    Container instances;
+    Container::iterator it;
 };
