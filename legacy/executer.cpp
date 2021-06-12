@@ -4,10 +4,11 @@
 #include <cctype>
 
 
-Executer::Executer(const Ssid& ssid, const Id& id)
+Executer::Executer(const Ssid& ssid, const Id& id, Logger& logger)
     :
       ssid{ssid},
       id{id},
+      logger{logger},
 
       ioContext{},
       workGuard{boost::asio::make_work_guard(ioContext)},

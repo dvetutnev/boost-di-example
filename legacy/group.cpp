@@ -1,10 +1,11 @@
 #include "group.h"
 
 
-Group::Group(Ssid ssid, std::size_t maxSize)
+Group::Group(Ssid ssid, std::size_t maxSize, Logger& logger)
     :
       ssid{ssid},
       maxSize{maxSize},
+      logger{logger},
 
       currentId{0},
 
@@ -14,7 +15,7 @@ Group::Group(Ssid ssid, std::size_t maxSize)
 
 Executer& Group::getExecuter() {
     if (instances.size() < maxSize) {
-        auto executer = std::make_unique<Executer>(ssid, Id{std::to_string(currentId)});
+        auto executer = std::make_unique<Executer>(ssid, Id{std::to_string(currentId)}, logger);
         currentId++;
         it = instances.insert(it, std::move(executer));
     }

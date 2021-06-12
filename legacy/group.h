@@ -9,7 +9,7 @@
 class Group
 {
 public:
-    Group(Ssid, std::size_t);
+    Group(Ssid, std::size_t, Logger&);
 
     Executer& getExecuter();
     void stopAll();
@@ -17,6 +17,8 @@ public:
 private:
     const Ssid ssid;
     const std::size_t maxSize;
+
+    Logger& logger;
 
     std::size_t currentId;
 

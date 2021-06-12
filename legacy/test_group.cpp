@@ -5,8 +5,15 @@
 #include <boost/algorithm/string/predicate.hpp>
 
 
+namespace {
+
+Logger logger;
+
+} // Anonymous namespace
+
+
 TEST(Group, severalId) {
-    Group group{Ssid{"Casiopea"}, 2};
+    Group group{Ssid{"Casiopea"}, 2, logger};
 
     IoContextWrapper ioContext;
 
@@ -36,7 +43,7 @@ TEST(Group, severalId) {
 }
 
 TEST(Group, ringId) {
-    Group group{Ssid{"Fornax"}, 2};
+    Group group{Ssid{"Fornax"}, 2, logger};
 
     IoContextWrapper ioContext;
 

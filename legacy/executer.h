@@ -1,5 +1,7 @@
 #pragma once
 
+#include "logger.h"
+
 #include <boost/asio/io_context.hpp>
 
 #include <string>
@@ -21,7 +23,7 @@ struct Id
 class Executer
 {
 public:
-    Executer(const Ssid&, const Id&);
+    Executer(const Ssid&, const Id&, Logger&);
 
     void process(const std::string&, std::function<void(const std::string&)>);
     void stop();
@@ -29,6 +31,8 @@ public:
 private:
     const Ssid ssid;
     const Id id;
+
+    Logger& logger;
 
     boost::asio::io_context ioContext;
     using WorkGuard = boost::asio::executor_work_guard<boost::asio::io_context::executor_type>;

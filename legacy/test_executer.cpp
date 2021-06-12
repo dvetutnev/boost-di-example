@@ -5,11 +5,18 @@
 #include <boost/algorithm/string/predicate.hpp>
 
 
+namespace {
+
+Logger logger;
+
+} // Anonymous namespace
+
+
 TEST(Executer, single) {
     const Ssid ssid{"sSid"};
     const Id id{"157"};
 
-    Executer executer{ssid, id};
+    Executer executer{ssid, id, logger};
 
     IoContextWrapper ioContext;
     auto [promise, future] = AsyncResult::create(ioContext);
@@ -28,9 +35,9 @@ TEST(Executer, single) {
 }
 
 TEST(Executer, multiple) {
-    Executer executer1{Ssid{"aaaa"}, Id{"42"}};
-    Executer executer2{Ssid{"bbbb"}, Id{"43"}};
-    Executer executer3{Ssid{"cccc"}, Id{"44"}};
+    Executer executer1{Ssid{"aaaa"}, Id{"42"}, logger};
+    Executer executer2{Ssid{"bbbb"}, Id{"43"}, logger};
+    Executer executer3{Ssid{"cccc"}, Id{"44"}, logger};
 
     IoContextWrapper ioContext;
 
