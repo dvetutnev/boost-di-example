@@ -1,7 +1,9 @@
 #pragma once
 
 #include "executer.h"
+
 #include <vector>
+#include <memory>
 
 
 class Group
@@ -9,12 +11,14 @@ class Group
 public:
     Group(Ssid, std::size_t);
 
-    Executer& getExectuter();
-    void stop();
+    Executer& getExecuter();
+    void stopAll();
 
 private:
     const Ssid ssid;
     const std::size_t maxSize;
 
-    std::vector<Executer> instances;
+    std::size_t nextId;
+
+    std::vector<std::unique_ptr<Executer>> instances;
 };

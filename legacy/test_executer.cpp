@@ -13,11 +13,11 @@ TEST(Executer, single) {
 
     IoContextWrapper ioContext;
     auto [promise, future] = AsyncResult::create(ioContext);
-    auto cb = [promise = promise] (const std::string& result) mutable {
+    auto handler = [promise = promise] (const std::string& result) mutable {
         promise(result);
     };
 
-    executer.process("AbCd", cb);
+    executer.process("AbCd", handler);
 
     ioContext.run();
 
@@ -35,21 +35,21 @@ TEST(Executer, multiple) {
     IoContextWrapper ioContext;
 
     auto [promise1, future1] = AsyncResult::create(ioContext);
-    auto cb1 = [promise = promise1] (const std::string& result) mutable {
+    auto handler1 = [promise = promise1] (const std::string& result) mutable {
         promise(result);
     };
     auto [promise2, future2] = AsyncResult::create(ioContext);
-    auto cb2 = [promise = promise2] (const std::string& result) mutable {
+    auto handler2 = [promise = promise2] (const std::string& result) mutable {
         promise(result);
     };
     auto [promise3, future3] = AsyncResult::create(ioContext);
-    auto cb3 = [promise = promise3] (const std::string& result) mutable {
+    auto handler3 = [promise = promise3] (const std::string& result) mutable {
         promise(result);
     };
 
-    executer1.process("AbCd", cb1);
-    executer2.process("abcd", cb2);
-    executer3.process("ABCD", cb3);
+    executer1.process("AbCd", handler1);
+    executer2.process("abcd", handler2);
+    executer3.process("ABCD", handler3);
 
     ioContext.run();
 
@@ -61,7 +61,7 @@ TEST(Executer, multiple) {
     executer2.stop();
     executer3.stop();
 
-    ASSERT_TRUE(boost::algorithm::starts_with(result1, "aBcD"));
-    ASSERT_TRUE(boost::algorithm::starts_with(result2, "ABCD"));
-    ASSERT_TRUE(boost::algorithm::starts_with(result3, "abcd"));
+    EXPECT_TRUE(boost::algorithm::starts_with(result1, "aBcD"));
+    EXPECT_TRUE(boost::algorithm::starts_with(result2, "ABCD"));
+    EXPECT_TRUE(boost::algorithm::starts_with(result3, "abcd"));
 }

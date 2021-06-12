@@ -15,8 +15,8 @@ Executer::Executer(const Ssid& ssid, const Id& id)
       thread{std::thread{&Executer::worker, this}}
 {}
 
-void Executer::process(const std::string& data, std::function<void(const std::string&)> cb) {
-    auto task = [data, cb, this]() {
+void Executer::process(const std::string& data, std::function<void(const std::string&)> handler) {
+    auto task = [data, handler, this]() {
         std::string result;
         std::transform(std::begin(data), std::end(data), std::back_inserter(result),
                        [](char c) -> char { return (std::islower(c)) ? std::toupper(c) : std::tolower(c); });
@@ -24,7 +24,7 @@ void Executer::process(const std::string& data, std::function<void(const std::st
         std::string tail = '[' + this->ssid.value + '-' + this->id.value + ']';
         result += ' ' + tail;
 
-        cb(result);
+        handler(result);
     };
 
     ioContext.post(task);
