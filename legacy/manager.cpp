@@ -1,5 +1,7 @@
 #include "manager.h"
+
 #include <cassert>
+#include <stdexcept>
 
 
 Manager::Manager(std::size_t groupSize, Logger& logger)
@@ -21,6 +23,10 @@ Executer& Manager::getExecuter(const Ssid& ssid) {
 
 void Manager::stop(const Ssid& ssid) {
     auto it = groups.find(ssid);
+    if (it == std::end(groups)) {
+        throw std::logic_error{"Unexists group"};
+    }
+
     it->second->stopAll();
 }
 

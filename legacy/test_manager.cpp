@@ -75,3 +75,9 @@ TEST(Manager, twoGroup) {
     EXPECT_TRUE(boost::algorithm::starts_with(result2, "aSdFgH"));
     EXPECT_TRUE(boost::algorithm::ends_with(result2, "[Columba-0]"));
 }
+
+TEST(Manager, unexistsGroup) {
+    Manager manager{1, logger};
+    Ssid ssid{""};
+    EXPECT_ANY_THROW(manager.stop(ssid));
+}
