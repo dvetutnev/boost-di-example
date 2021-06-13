@@ -26,6 +26,8 @@ void Executer::process(const std::string& data, std::function<void(const std::st
         result += ' ' + tail;
 
         handler(result);
+
+        this->logger.log("Log: " + result);
     };
 
     ioContext.post(task);

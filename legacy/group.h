@@ -9,7 +9,7 @@
 class Group
 {
 public:
-    Group(Ssid, std::size_t, Logger&);
+    Group(const Ssid&, std::size_t, Logger&);
 
     Executer& getExecuter();
     void stopAll();

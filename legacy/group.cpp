@@ -1,7 +1,7 @@
 #include "group.h"
 
 
-Group::Group(Ssid ssid, std::size_t maxSize, Logger& logger)
+Group::Group(const Ssid& ssid, std::size_t maxSize, Logger& logger)
     :
       ssid{ssid},
       maxSize{maxSize},
