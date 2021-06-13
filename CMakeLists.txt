@@ -21,9 +21,14 @@ conan_cmake_install(
 
 find_package(Boost REQUIRED)
 find_package(GTest REQUIRED)
-find_package(Threads)
+
+include_directories(${CMAKE_SOURCE_DIR})
 
 enable_testing()
 
-add_subdirectory(legacy)
+add_executable(test_async_result test_async_result.cpp)
+target_link_libraries(test_async_result Boost::headers GTest::gtest_main)
+add_test(NAME test_async_result COMMAND test_async_result)
 
+add_subdirectory(legacy)
+add_subdirectory(di)

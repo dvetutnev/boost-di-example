@@ -1,8 +1,4 @@
-add_executable(legacy main.cpp)
-target_link_libraries(legacy Boost::headers Threads::Threads)
-
 add_executable(test_legacy
-    test_async_result.cpp
     executer.cpp
     test_executer.cpp
     group.cpp
