@@ -4,9 +4,16 @@
 
 #include <boost/asio/io_context.hpp>
 
-#include <string>
 #include <functional>
 #include <thread>
+
+
+struct IExecuter
+{
+    virtual void process(const std::string&, std::function<void(const std::string&)>) = 0;
+    virtual void stop() = 0;
+    virtual ~IExecuter() = default;
+};
 
 
 struct Ssid
@@ -20,19 +27,19 @@ struct Id
 };
 
 
-class Executer
+class Executer : public IExecuter
 {
 public:
-    Executer(const Ssid&, const Id&, Logger&);
+    Executer(const Ssid&, const Id&, ILogger&);
 
-    void process(const std::string&, std::function<void(const std::string&)>);
-    void stop();
+    void process(const std::string&, std::function<void(const std::string&)>) override;
+    void stop() override;
 
 private:
     const Ssid ssid;
     const Id id;
 
-    Logger& logger;
+    ILogger& logger;
 
     boost::asio::io_context ioContext;
     using WorkGuard = boost::asio::executor_work_guard<boost::asio::io_context::executor_type>;

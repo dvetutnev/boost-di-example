@@ -4,13 +4,13 @@
 #include <stdexcept>
 
 
-Manager::Manager(std::size_t groupSize, Logger& logger)
+Manager::Manager(std::size_t groupSize, ILogger& logger)
     :
       groupSize{groupSize},
       logger{logger}
 {}
 
-Executer& Manager::getExecuter(const Ssid& ssid) {
+IExecuter& Manager::getExecuter(const Ssid& ssid) {
     auto it = groups.find(ssid);
     if (it == std::end(groups)) {
         auto group = std::make_unique<Group>(ssid, groupSize, logger);

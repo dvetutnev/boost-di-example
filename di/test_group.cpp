@@ -47,10 +47,10 @@ TEST(Group, ringId) {
 
     IoContextWrapper ioContext;
 
-    Executer& dummy1 = group.getExecuter();
-    Executer& dummy2 = group.getExecuter();
+    IExecuter& dummy1 = group.getExecuter();
+    IExecuter& dummy2 = group.getExecuter();
 
-    Executer& executer = group.getExecuter();
+    IExecuter& executer = group.getExecuter();
 
     auto [promise, future] = AsyncResult::create(ioContext);
     auto handler = [p = promise](const std::string& result) mutable {

@@ -4,7 +4,7 @@
 #include <cctype>
 
 
-Executer::Executer(const Ssid& ssid, const Id& id, Logger& logger)
+Executer::Executer(const Ssid& ssid, const Id& id, ILogger& logger)
     :
       ssid{ssid},
       id{id},

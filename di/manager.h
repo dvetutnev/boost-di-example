@@ -7,22 +7,21 @@
 class Manager
 {
 public:
-    Manager(std::size_t, Logger&);
+    Manager(std::size_t, ILogger&);
 
-    Executer& getExecuter(const Ssid&);
+    IExecuter& getExecuter(const Ssid&);
     void stop(const Ssid&);
     void stopAll();
 
 private:
     const std::size_t groupSize;
-    Logger& logger;
+    ILogger& logger;
 
-    using Item = std::unique_ptr<Group>;
     struct Compare
     {
         bool operator()(const Ssid& a, const Ssid& b) const {
             return std::less<std::string>{}(a.value, b.value);
         }
     };
-    std::map<Ssid, Item, Compare> groups;
+    std::map<Ssid, std::unique_ptr<IGroup>, Compare> groups;
 };
