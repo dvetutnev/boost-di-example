@@ -1,13 +1,21 @@
 #include "executer.h"
 #include "async_result.h"
 
-#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <boost/algorithm/string/predicate.hpp>
+
+
+using ::testing::NiceMock;
 
 
 namespace {
 
-Logger logger;
+
+struct MockLogger : ILogger
+{
+    MOCK_METHOD(void, log, (const std::string&), (override));
+};
+
 
 } // Anonymous namespace
 
@@ -15,6 +23,8 @@ Logger logger;
 TEST(Executer, single) {
     const Ssid ssid{"sSid"};
     const Id id{"157"};
+
+    NiceMock<MockLogger> logger;
 
     Executer executer{ssid, id, logger};
 
@@ -35,6 +45,8 @@ TEST(Executer, single) {
 }
 
 TEST(Executer, multiple) {
+    NiceMock<MockLogger> logger;
+
     Executer executer1{Ssid{"aaaa"}, Id{"42"}, logger};
     Executer executer2{Ssid{"bbbb"}, Id{"43"}, logger};
     Executer executer3{Ssid{"cccc"}, Id{"44"}, logger};
@@ -71,4 +83,26 @@ TEST(Executer, multiple) {
     EXPECT_TRUE(boost::algorithm::starts_with(result1, "aBcD"));
     EXPECT_TRUE(boost::algorithm::starts_with(result2, "ABCD"));
     EXPECT_TRUE(boost::algorithm::starts_with(result3, "abcd"));
+}
+
+TEST(Executer, log) {
+    const Ssid ssid{"sSid"};
+    const Id id{"157"};
+
+    MockLogger logger;
+    EXPECT_CALL(logger, log)
+            .Times(1)
+            ;
+
+    Executer executer{ssid, id, logger};
+
+    IoContextWrapper ioContext;
+    auto [promise, future] = AsyncResult::create(ioContext);
+    auto handler = [promise = promise] (const std::string& result) mutable {
+        promise(result);
+    };
+
+    executer.process("AbCd", handler);
+    ioContext.run();
+    executer.stop();
 }
