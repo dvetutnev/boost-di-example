@@ -1,9 +1,11 @@
 [requires]
 boost/1.76.0
 gtest/cci.20210126
+di/1.2.0
 
 [options]
 boost:header_only=True
+di:with_extensions=True
 
 [generators]
 cmake_find_package

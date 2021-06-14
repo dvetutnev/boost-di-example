@@ -5,5 +5,5 @@ add_executable(test_di
     test_group.cpp
     manager.cpp
     test_manager.cpp)
-target_link_libraries(test_di Boost::headers GTest::gmock_main)
+target_link_libraries(test_di Boost::headers di::di GTest::gmock_main)
 add_test(NAME test_di COMMAND test_di)

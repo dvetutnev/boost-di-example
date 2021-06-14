@@ -21,6 +21,7 @@ conan_cmake_install(
 
 find_package(Boost REQUIRED)
 find_package(GTest REQUIRED)
+find_package(di REQUIRED)
 
 include_directories(${CMAKE_SOURCE_DIR})
 
