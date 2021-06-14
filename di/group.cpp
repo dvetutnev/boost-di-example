@@ -1,11 +1,11 @@
 #include "group.h"
 
 
-Group::Group(const Ssid& ssid, std::size_t maxSize, ILogger& logger)
+Group::Group(const Ssid& ssid, std::size_t maxSize, std::shared_ptr<ILogger> logger)
     :
       ssid{ssid},
       maxSize{maxSize},
-      logger{logger},
+      logger{std::move(logger)},
 
       currentId{0},
 

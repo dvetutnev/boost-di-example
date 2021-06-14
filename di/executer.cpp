@@ -4,11 +4,11 @@
 #include <cctype>
 
 
-Executer::Executer(const Ssid& ssid, const Id& id, ILogger& logger)
+Executer::Executer(const Ssid& ssid, const Id& id, std::shared_ptr<ILogger> logger)
     :
       ssid{ssid},
       id{id},
-      logger{logger},
+      logger{std::move(logger)},
 
       ioContext{},
       workGuard{boost::asio::make_work_guard(ioContext)},
@@ -27,7 +27,7 @@ void Executer::process(const std::string& data, std::function<void(const std::st
 
         handler(result);
 
-        this->logger.log("Log: " + result);
+        this->logger->log("Log: " + result);
     };
 
     ioContext.post(task);

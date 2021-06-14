@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <thread>
+#include <memory>
 
 
 struct IExecuter
@@ -30,7 +31,7 @@ struct Id
 class Executer : public IExecuter
 {
 public:
-    Executer(const Ssid&, const Id&, ILogger&);
+    Executer(const Ssid&, const Id&, std::shared_ptr<ILogger>);
 
     void process(const std::string&, std::function<void(const std::string&)>) override;
     void stop() override;
@@ -39,7 +40,7 @@ private:
     const Ssid ssid;
     const Id id;
 
-    ILogger& logger;
+    const std::shared_ptr<ILogger> logger;
 
     boost::asio::io_context ioContext;
     using WorkGuard = boost::asio::executor_work_guard<boost::asio::io_context::executor_type>;

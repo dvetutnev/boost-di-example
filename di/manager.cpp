@@ -4,10 +4,10 @@
 #include <stdexcept>
 
 
-Manager::Manager(std::size_t groupSize, ILogger& logger)
+Manager::Manager(std::size_t groupSize, std::shared_ptr<ILogger> logger)
     :
       groupSize{groupSize},
-      logger{logger}
+      logger{std::move(logger)}
 {}
 
 IExecuter& Manager::getExecuter(const Ssid& ssid) {

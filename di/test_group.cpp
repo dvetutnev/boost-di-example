@@ -7,7 +7,7 @@
 
 namespace {
 
-Logger logger;
+auto logger = std::make_shared<Logger>();
 
 } // Anonymous namespace
 

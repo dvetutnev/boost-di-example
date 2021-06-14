@@ -7,7 +7,7 @@
 class Manager
 {
 public:
-    Manager(std::size_t, ILogger&);
+    Manager(std::size_t, std::shared_ptr<ILogger>);
 
     IExecuter& getExecuter(const Ssid&);
     void stop(const Ssid&);
@@ -15,7 +15,7 @@ public:
 
 private:
     const std::size_t groupSize;
-    ILogger& logger;
+    const std::shared_ptr<ILogger> logger;
 
     struct Compare
     {

@@ -24,7 +24,7 @@ TEST(Executer, single) {
     const Ssid ssid{"sSid"};
     const Id id{"157"};
 
-    NiceMock<MockLogger> logger;
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
 
     Executer executer{ssid, id, logger};
 
@@ -45,7 +45,7 @@ TEST(Executer, single) {
 }
 
 TEST(Executer, multiple) {
-    NiceMock<MockLogger> logger;
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
 
     Executer executer1{Ssid{"aaaa"}, Id{"42"}, logger};
     Executer executer2{Ssid{"bbbb"}, Id{"43"}, logger};
@@ -89,8 +89,8 @@ TEST(Executer, log) {
     const Ssid ssid{"sSid"};
     const Id id{"157"};
 
-    MockLogger logger;
-    EXPECT_CALL(logger, log)
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
+    EXPECT_CALL(*logger, log)
             .Times(1)
             ;
 

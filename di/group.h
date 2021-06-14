@@ -1,9 +1,7 @@
 #pragma once
 
 #include "executer.h"
-
 #include <list>
-#include <memory>
 
 
 struct IGroup
@@ -17,7 +15,7 @@ struct IGroup
 class Group : public IGroup
 {
 public:
-    Group(const Ssid&, std::size_t, ILogger&);
+    Group(const Ssid&, std::size_t, std::shared_ptr<ILogger>);
 
     IExecuter& getExecuter() override;
     void stopAll() override;
@@ -26,7 +24,7 @@ private:
     const Ssid ssid;
     const std::size_t maxSize;
 
-    ILogger& logger;
+    const std::shared_ptr<ILogger> logger;
 
     std::size_t currentId;
 
