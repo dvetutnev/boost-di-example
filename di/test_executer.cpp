@@ -1,4 +1,6 @@
 #include "executer.h"
+
+#include "mocks.h"
 #include "async_result.h"
 
 #include <gmock/gmock.h>
@@ -6,18 +8,6 @@
 
 
 using ::testing::NiceMock;
-
-
-namespace {
-
-
-struct MockLogger : ILogger
-{
-    MOCK_METHOD(void, log, (const std::string&), (override));
-};
-
-
-} // Anonymous namespace
 
 
 TEST(Executer, single) {

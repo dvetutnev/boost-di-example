@@ -38,6 +38,10 @@ void Executer::stop() {
     thread.join();
 }
 
+const Id& Executer::getId() const {
+    return id;
+}
+
 void Executer::worker() {
     ioContext.run();
 }

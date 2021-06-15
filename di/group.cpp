@@ -1,11 +1,11 @@
 #include "group.h"
 
 
-Group::Group(const Ssid& ssid, std::size_t maxSize, std::shared_ptr<ILogger> logger)
+Group::Group(const Ssid& ssid, std::size_t maxSize, std::shared_ptr<IFactoryExecuter> factory)
     :
       ssid{ssid},
       maxSize{maxSize},
-      logger{std::move(logger)},
+      factory{std::move(factory)},
 
       currentId{0},
 
@@ -15,7 +15,7 @@ Group::Group(const Ssid& ssid, std::size_t maxSize, std::shared_ptr<ILogger> log
 
 IExecuter& Group::getExecuter() {
     if (instances.size() < maxSize) {
-        auto executer = std::make_unique<Executer>(ssid, Id{std::to_string(currentId)}, logger);
+        auto executer = factory->create(Ssid{ssid}, Id{std::to_string(currentId)});
         currentId++;
         it = instances.insert(it, std::move(executer));
     }
