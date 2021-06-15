@@ -56,36 +56,28 @@ TEST(Group, ringId) {
     auto injector = di::make_injector(config());
 
     auto& mock = injector.create<MockFactoryExecuter&>();
-    {
-        InSequence _;
 
-        const Id id0{"0"};
-        auto executer1 = std::make_unique<MockExecuter>();
-        EXPECT_CALL(*executer1, getId)
-                .WillRepeatedly(ReturnRef(id0))
-                ;
-        EXPECT_CALL(mock, create(ssid, Id{"0"}))
-                .WillOnce(Return(ByMove(std::move(executer1))))
-                ;
+    const Id id0{"0"};
+    auto executer0 = std::make_unique<MockExecuter>();
+    EXPECT_CALL(*executer0, getId)
+            .WillRepeatedly(ReturnRef(id0))
+            ;
+    EXPECT_CALL(mock, create(ssid, id0))
+            .WillOnce(Return(ByMove(std::move(executer0))))
+            ;
 
-        const Id id1{"1"};
-        auto executer2 = std::make_unique<MockExecuter>();
-        EXPECT_CALL(*executer1, getId)
-                .WillRepeatedly(ReturnRef(id1))
-                ;
-        EXPECT_CALL(mock, create(ssid, Id{"1"}))
-                .WillOnce(Return(ByMove(std::move(executer2))))
-                ;
-        EXPECT_CALL(mock, create)
-                .Times(0)
-                ;
-    }
+    const Id id1{"1"};
+    auto executer1 = std::make_unique<MockExecuter>();
+    EXPECT_CALL(mock, create(ssid, id1))
+            .WillOnce(Return(ByMove(std::move(executer1))))
+            ;
 
     auto group = injector.create<std::unique_ptr<IGroup>>();
 
+    IExecuter& _0 = group->getExecuter();
     IExecuter& _1 = group->getExecuter();
-    IExecuter& _2 = group->getExecuter();
 
     IExecuter& executer = group->getExecuter();
-    ASSERT_EQ(executer.getId(), Id{"0"});
+    EXPECT_EQ(&_0, &executer);
+    EXPECT_EQ(executer.getId(), Id{"0"});
 }

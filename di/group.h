@@ -33,7 +33,7 @@ private:
 
     std::size_t currentId;
 
-    using Container = std::list<std::shared_ptr<IExecuter>>;
+    using Container = std::list<std::unique_ptr<IExecuter>>;
     Container instances;
     Container::iterator it;
 };
