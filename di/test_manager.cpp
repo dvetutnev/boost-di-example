@@ -7,6 +7,7 @@
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::ByMove;
+using ::testing::_;
 
 
 namespace di = boost::di;
@@ -27,7 +28,7 @@ auto config = []() {
 } // Anonymous namespace
 
 
-TEST(Manager, createGroup) {
+TEST(Manager, getExecuter) {
     auto injector = di::make_injector(config());
 
 
@@ -64,10 +65,45 @@ TEST(Manager, createGroup) {
     IExecuter& _2 = manager->getExecuter(Ssid{"Cetus"});
     IExecuter& _3 = manager->getExecuter(Ssid{"Lepus"});
 }
-/*
-TEST(Manager, unexistsGroup) {
-    Manager manager{1, logger};
-    Ssid ssid{""};
-    EXPECT_ANY_THROW(manager.stop(ssid));
+
+TEST(Manager, stopAll) {
+    auto injector = di::make_injector(config());
+
+
+    IExecuter& executer = injector.create<IExecuter&>();
+
+
+    auto group1 = injector.create<std::unique_ptr<MockGroup>>();
+
+    EXPECT_CALL(*group1, getExecuter)
+            .WillRepeatedly(ReturnRef(executer))
+            ;
+    EXPECT_CALL(*group1, stopAll)
+            .Times(1)
+            ;
+
+    auto group2 = injector.create<std::unique_ptr<MockGroup>>();
+
+    EXPECT_CALL(*group2, getExecuter)
+            .WillRepeatedly(ReturnRef(executer))
+            ;
+    EXPECT_CALL(*group2, stopAll)
+            .Times(1)
+            ;
+
+
+    auto& factory = injector.create<MockFactoryGroup&>();
+
+    EXPECT_CALL(factory, create(_))
+            .WillOnce(Return(ByMove(std::move(group1))))
+            .WillOnce(Return(ByMove(std::move(group2))))
+            ;
+
+
+    auto manager = injector.create<std::unique_ptr<Manager>>();
+
+    IExecuter& _1 = manager->getExecuter(Ssid{"Lepus"});
+    IExecuter& _2 = manager->getExecuter(Ssid{"Cetus"});
+
+    manager->stopAll();
 }
-*/
