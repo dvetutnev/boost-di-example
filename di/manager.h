@@ -6,7 +6,7 @@
 #include <map>
 
 
-using IFactoryGroup = boost::di::extension::ifactory<IGroup, const Ssid&>;
+using IFactoryGroup = boost::di::extension::ifactory<IGroup, Ssid>;
 
 
 class Manager

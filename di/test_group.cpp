@@ -35,10 +35,10 @@ TEST(Group, severalId) {
     auto& mock = injector.create<MockFactoryExecuter&>();
     {
         InSequence _;
-        EXPECT_CALL(mock, create(ssid, Id{"0"}))
+        EXPECT_CALL(mock, create(Ssid{ssid}, Id{"0"}))
                 .WillOnce(Return(ByMove(std::make_unique<MockExecuter>())))
                 ;
-        EXPECT_CALL(mock, create(ssid, Id{"1"}))
+        EXPECT_CALL(mock, create(Ssid{ssid}, Id{"1"}))
                 .WillOnce(Return(ByMove(std::make_unique<MockExecuter>())))
                 ;
     }
@@ -59,13 +59,13 @@ TEST(Group, ringId) {
     EXPECT_CALL(*executer0, getId)
             .WillRepeatedly(ReturnRef(id0))
             ;
-    EXPECT_CALL(mock, create(ssid, id0))
+    EXPECT_CALL(mock, create(Ssid{ssid}, Id{id0}))
             .WillOnce(Return(ByMove(std::move(executer0))))
             ;
 
     const Id id1{"1"};
     auto executer1 = std::make_unique<MockExecuter>();
-    EXPECT_CALL(mock, create(ssid, id1))
+    EXPECT_CALL(mock, create(Ssid{ssid}, Id{id1}))
             .WillOnce(Return(ByMove(std::move(executer1))))
             ;
 

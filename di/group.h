@@ -20,7 +20,7 @@ struct GroupSize
 };
 
 
-using IFactoryExecuter = boost::di::extension::ifactory<IExecuter, const Ssid&, const Id&>;
+using IFactoryExecuter = boost::di::extension::ifactory<IExecuter, Ssid, Id>;
 
 
 class Group : public IGroup

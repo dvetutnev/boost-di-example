@@ -37,12 +37,12 @@ TEST(DI, factory_singleton) {
     auto executerRaw = executer_.get();
 
     auto mock = injector.create<std::shared_ptr<MockFactoryExecuter>>();
-    EXPECT_CALL(*mock, create(ssid, id))
+    EXPECT_CALL(*mock, create(Ssid{ssid}, Id{id}))
             .WillOnce(Return(ByMove(std::move(executer_))))
             ;
 
     auto factory = injector.create<std::shared_ptr<IFactoryExecuter>>();
-    std::unique_ptr<IExecuter> executer = factory->create(ssid, id);
+    std::unique_ptr<IExecuter> executer = factory->create(Ssid{ssid}, Id{id});
 
     ASSERT_EQ(executer.get(), executerRaw);
 }

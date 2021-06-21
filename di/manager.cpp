@@ -12,7 +12,7 @@ Manager::Manager(std::shared_ptr<IFactoryGroup> f)
 IExecuter& Manager::getExecuter(const Ssid& ssid) {
     auto it = groups.find(ssid);
     if (it == std::end(groups)) {
-        auto group = factory->create(ssid);
+        auto group = factory->create(Ssid{ssid});
         auto pair = std::make_pair(ssid, std::move(group));
         it = groups.insert(std::move(pair)).first;
     }
