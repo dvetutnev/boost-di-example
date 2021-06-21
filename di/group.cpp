@@ -1,10 +1,10 @@
 #include "group.h"
 
 
-Group::Group(const Ssid& ssid, std::size_t maxSize, std::shared_ptr<IFactoryExecuter> factory)
+Group::Group(const Ssid& ssid, GroupSize maxSize, std::shared_ptr<IFactoryExecuter> factory)
     :
       ssid{ssid},
-      maxSize{maxSize},
+      maxSize{maxSize.value},
       factory{std::move(factory)},
 
       currentId{0},

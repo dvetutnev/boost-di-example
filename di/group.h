@@ -14,13 +14,19 @@ struct IGroup
 };
 
 
+struct GroupSize
+{
+    std::size_t value;
+};
+
+
 using IFactoryExecuter = boost::di::extension::ifactory<IExecuter, const Ssid&, const Id&>;
 
 
 class Group : public IGroup
 {
 public:
-    Group(const Ssid&, std::size_t, std::shared_ptr<IFactoryExecuter>);
+    Group(const Ssid&, GroupSize, std::shared_ptr<IFactoryExecuter>);
 
     IExecuter& getExecuter() override;
     void stopAll() override;

@@ -22,7 +22,7 @@ auto config = []() {
         di::bind<IGroup>().to<Group>(),
 
         di::bind<Ssid>().to(ssid),
-        di::bind<std::size_t>().to(std::size_t{2})
+        di::bind<GroupSize>().to(GroupSize{2})
     );
 };
 
