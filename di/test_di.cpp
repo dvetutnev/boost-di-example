@@ -46,3 +46,33 @@ TEST(DI, factory_singleton) {
 
     ASSERT_EQ(executer.get(), executerRaw);
 }
+
+
+namespace {
+
+
+struct IBar
+{
+    virtual std::size_t method() const = 0;
+    virtual ~IBar() = default;
+};
+
+struct Bar : IBar
+{
+    std::size_t method() const override { return 42; }
+};
+
+using IFactoryBar = di::extension::ifactory<IBar>;
+using FactoryBar = di::extension::factory<Bar>;
+
+
+} // Anonymouns namespace
+
+
+TEST(DI, factory_product) {
+    auto injector = di::make_injector(
+        di::bind<IFactoryBar>().to(FactoryBar{})
+    );
+    auto& factory = injector.create<IFactoryBar&>();
+    auto bar = factory.create();
+}
