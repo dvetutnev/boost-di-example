@@ -28,7 +28,7 @@ using FactoryBar = di::extension::factory<Bar>;
 
 } // Anonymouns namespace
 
-TEST(DI, factory_product) {
+TEST(DI, factory) {
     auto injector = di::make_injector(
         di::bind<IFactoryBar>().to(FactoryBar{})
     );
@@ -55,7 +55,7 @@ struct Value
 struct Foo : IFoo
 {
     Foo(const Value& p) : value{p.value} {}
-    virtual std::size_t method() const override { return value * 2; }
+    std::size_t method() const override { return value * 2; }
 
     std::size_t value;
 };
@@ -66,7 +66,7 @@ using FactoryFoo = di::extension::factory<Foo>;
 
 } // Anonymous namespace
 
-TEST(DI, factory_product_with_arg) {
+TEST(DI, factory_with_arg) {
     auto injector = di::make_injector(
         di::bind<IFactoryFoo>().to(FactoryFoo{})
     );
@@ -93,4 +93,45 @@ TEST(DI, factory_mock) {
     );
     auto factory = injector.create<std::shared_ptr<IFactoryFoo>>();
     ASSERT_TRUE(factory);
+}
+
+
+namespace {
+
+
+struct FooWithInject : Foo
+{
+    FooWithInject(const Value& p, std::shared_ptr<ILogger> l)
+        :
+          Foo{p},
+          logger{std::move(l)}
+    {}
+
+    std::size_t method() const override {
+        std::size_t result = Foo::method();
+        logger->log(std::to_string(result));
+        return result;
+    }
+
+    std::shared_ptr<ILogger> logger;
+};
+
+using IFactoryFooWithInject = di::extension::ifactory<IFoo, Value>;
+using FactoryFooWithInject = di::extension::factory<FooWithInject>;
+
+
+} // Anonymous namespace
+
+TEST(DI, factory_with_inject) {
+    auto injector = di::make_injector(
+        di::bind<ILogger>().to<MockLogger>().in(di::singleton),
+        di::bind<IFactoryFooWithInject>().to(FactoryFooWithInject{})
+    );
+
+    auto& logger = injector.create<MockLogger&>();
+    EXPECT_CALL(logger, log).Times(1);
+
+    auto factory = injector.create<std::shared_ptr<IFactoryFooWithInject>>();
+    auto foo = factory->create(Value{111});
+    EXPECT_EQ(foo->method(), 222);
 }
