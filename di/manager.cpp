@@ -4,16 +4,15 @@
 #include <stdexcept>
 
 
-Manager::Manager(std::size_t groupSize, std::shared_ptr<ILogger> logger)
+Manager::Manager(std::shared_ptr<IFactoryGroup> f)
     :
-      groupSize{groupSize},
-      logger{std::move(logger)}
+      factory{std::move(f)}
 {}
 
 IExecuter& Manager::getExecuter(const Ssid& ssid) {
     auto it = groups.find(ssid);
     if (it == std::end(groups)) {
-        auto group = std::make_unique<Group>(ssid, groupSize, logger);
+        auto group = factory->create(ssid);
         auto pair = std::make_pair(ssid, std::move(group));
         it = groups.insert(std::move(pair)).first;
     }

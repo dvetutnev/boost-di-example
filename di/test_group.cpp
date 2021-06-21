@@ -1,10 +1,7 @@
 #include "group.h"
-
 #include "mocks.h"
-#include "async_result.h"
 
 #include <gtest/gtest.h>
-#include <boost/algorithm/string/predicate.hpp>
 
 
 using ::testing::Return;

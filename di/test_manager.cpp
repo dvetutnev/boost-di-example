@@ -1,83 +1,73 @@
 #include "manager.h"
-#include "async_result.h"
+#include "mocks.h"
 
-#include <gtest/gtest.h>
-#include <boost/algorithm/string/predicate.hpp>
+#include <gmock/gmock.h>
+
+
+using ::testing::Return;
+using ::testing::ReturnRef;
+using ::testing::ByMove;
+
+
+namespace di = boost::di;
 
 
 namespace {
 
-auto logger = std::make_shared<Logger>();
+auto config = []() {
+    return di::make_injector(
+        di::bind<IFactoryGroup>().to<MockFactoryGroup>().in(di::singleton),
+        di::bind<IGroup>().to<MockGroup>().in(di::unique),
+        di::bind<IExecuter>().to<MockExecuter>(),
+
+        di::bind<Manager>().to<Manager>()
+    );
+};
 
 } // Anonymous namespace
 
 
-TEST(Manager, singleGroup) {
-    Manager manager{2, logger};
+TEST(Manager, createGroup) {
+    auto injector = di::make_injector(config());
 
-    const Ssid ssid{"Eridanus"};
 
-    IoContextWrapper ioContext;
+    IExecuter& executer = injector.create<IExecuter&>();
 
-    auto [promise1, future1] = AsyncResult::create(ioContext);
-    auto handler1 = [p = promise1](const std::string& result) mutable {
-        p(result);
-    };
-    manager.getExecuter(ssid).process("aSdFgH", handler1);
 
-    auto [promise2, future2] = AsyncResult::create(ioContext);
-    auto handler2 = [p = promise2](const std::string& result) mutable {
-        p(result);
-    };
-    manager.getExecuter(ssid).process("AsDfGh", handler2);
+    auto group1 = injector.create<std::unique_ptr<MockGroup>>();
 
-    ioContext.run();
-    manager.stop(ssid);
+    EXPECT_CALL(*group1, getExecuter())
+            .WillOnce(ReturnRef(executer))
+            .WillOnce(ReturnRef(executer))
+            ;
 
-    std::string result1 = future1.get();
-    std::string result2 = future2.get();
+    auto group2 = injector.create<std::unique_ptr<MockGroup>>();
 
-    EXPECT_TRUE(boost::algorithm::starts_with(result1, "AsDfGh"));
-    EXPECT_TRUE(boost::algorithm::ends_with(result1, "[Eridanus-0]"));
+    EXPECT_CALL(*group2, getExecuter())
+            .WillOnce(ReturnRef(executer))
+            ;
 
-    EXPECT_TRUE(boost::algorithm::starts_with(result2, "aSdFgH"));
-    EXPECT_TRUE(boost::algorithm::ends_with(result2, "[Eridanus-1]"));
+
+    auto& factory = injector.create<MockFactoryGroup&>();
+
+    EXPECT_CALL(factory, create(Ssid{"Lepus"}))
+            .WillOnce(Return(ByMove(std::move(group1))))
+            ;
+    EXPECT_CALL(factory, create(Ssid{"Cetus"}))
+            .WillOnce(Return(ByMove(std::move(group2))))
+            ;
+
+
+    auto manager = injector.create<std::unique_ptr<Manager>>();
+
+    IExecuter& _1 = manager->getExecuter(Ssid{"Lepus"});
+    IExecuter& _2 = manager->getExecuter(Ssid{"Cetus"});
+    IExecuter& _3 = manager->getExecuter(Ssid{"Lepus"});
 }
-
-TEST(Manager, twoGroup) {
-    Manager manager{1, logger};
-
-    IoContextWrapper ioContext;
-
-    auto [promise1, future1] = AsyncResult::create(ioContext);
-    auto handler1 = [p = promise1](const std::string& result) mutable {
-        p(result);
-    };
-    const Ssid ssid1{"Cygnus"};
-    manager.getExecuter(ssid1).process("aSdFgH", handler1);
-
-    auto [promise2, future2] = AsyncResult::create(ioContext);
-    auto handler2 = [p = promise2](const std::string& result) mutable {
-        p(result);
-    };
-    const Ssid ssid2{"Columba"};
-    manager.getExecuter(ssid2).process("AsDfGh", handler2);
-
-    ioContext.run();
-    manager.stopAll();
-
-    std::string result1 = future1.get();
-    std::string result2 = future2.get();
-
-    EXPECT_TRUE(boost::algorithm::starts_with(result1, "AsDfGh"));
-    EXPECT_TRUE(boost::algorithm::ends_with(result1, "[Cygnus-0]"));
-
-    EXPECT_TRUE(boost::algorithm::starts_with(result2, "aSdFgH"));
-    EXPECT_TRUE(boost::algorithm::ends_with(result2, "[Columba-0]"));
-}
-
+/*
 TEST(Manager, unexistsGroup) {
     Manager manager{1, logger};
     Ssid ssid{""};
     EXPECT_ANY_THROW(manager.stop(ssid));
 }
+*/

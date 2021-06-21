@@ -16,8 +16,8 @@ Group::Group(const Ssid& ssid, std::size_t maxSize, std::shared_ptr<IFactoryExec
 IExecuter& Group::getExecuter() {
     if (instances.size() < maxSize) {
         auto executer = factory->create(Ssid{ssid}, Id{std::to_string(currentId)});
-        currentId++;
         it = instances.insert(it, std::move(executer));
+        currentId++;
     }
     else {
         ++it;

@@ -1,6 +1,9 @@
 #pragma once
 
+#include "executer.h"
 #include "group.h"
+#include "manager.h"
+
 #include <gmock/gmock.h>
 
 
@@ -18,5 +21,16 @@ struct MockExecuter : IExecuter
 
 struct MockFactoryExecuter : IFactoryExecuter
 {
-    MOCK_METHOD((std::unique_ptr<IExecuter>), create, (const Ssid&, const Id&), (const, override));
+    MOCK_METHOD(std::unique_ptr<IExecuter>, create, (const Ssid&, const Id&), (const, override));
+};
+
+struct MockGroup : IGroup
+{
+    MOCK_METHOD(IExecuter&, getExecuter, (), (override));
+    MOCK_METHOD(void, stopAll, (), (override));
+};
+
+struct MockFactoryGroup : IFactoryGroup
+{
+    MOCK_METHOD(std::unique_ptr<IGroup>, create, (const Ssid&), (const, override));
 };
