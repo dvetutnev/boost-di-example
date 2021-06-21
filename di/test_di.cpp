@@ -114,3 +114,23 @@ TEST(DI, factory_product_with_arg) {
     auto foo = factory->create(Value{13});
     ASSERT_EQ(foo->method(), 26);
 }
+
+
+namespace {
+
+
+struct MockFactoryFoo : IFactoryFoo
+{
+    MOCK_METHOD(std::unique_ptr<IFoo>, create, (Value&&), (const, override));
+};
+
+
+} // Anonymous namespace
+
+TEST(DI, factory_mock) {
+    auto injector = di::make_injector(
+        di::bind<IFactoryFoo>().to<MockFactoryFoo>()
+    );
+    auto factory = injector.create<std::shared_ptr<IFactoryFoo>>();
+    ASSERT_TRUE(factory);
+}
