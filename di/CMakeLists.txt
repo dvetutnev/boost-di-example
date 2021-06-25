@@ -6,7 +6,6 @@ add_executable(test_di
     manager.cpp
     test_manager.cpp
     test_product.cpp
-    test_di.cpp
-    di_example.cpp)
+    test_di.cpp)
 target_link_libraries(test_di Boost::headers di::di GTest::gmock_main)
 add_test(NAME test_di COMMAND test_di)
