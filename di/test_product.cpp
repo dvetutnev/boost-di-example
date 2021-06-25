@@ -21,8 +21,8 @@ struct FactoryGroupImpl : IFactoryGroup
 
     std::unique_ptr<IGroup> create(Ssid&& ssid) const override {
         auto groupSize = injector.template create<GroupSize>();
-        auto f = injector.template create<std::shared_ptr<IFactoryExecuter>>();
-        return std::make_unique<Group>(std::move(ssid), groupSize, std::move(f));
+        auto factory = injector.template create<std::shared_ptr<IFactoryExecuter>>();
+        return std::make_unique<Group>(std::move(ssid), groupSize, std::move(factory));
     }
 
     TInjector& injector;
