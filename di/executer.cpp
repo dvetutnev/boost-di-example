@@ -4,10 +4,10 @@
 #include <cctype>
 
 
-Executer::Executer(const Ssid& ssid, const Id& id, std::shared_ptr<ILogger> logger)
+Executer::Executer(Ssid ssid, Id id, std::shared_ptr<ILogger> logger)
     :
-      ssid{ssid},
-      id{id},
+      ssid{std::move(ssid)},
+      id{std::move(id)},
       logger{std::move(logger)},
 
       ioContext{},

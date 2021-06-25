@@ -26,7 +26,7 @@ using IFactoryExecuter = boost::di::extension::ifactory<IExecuter, Ssid, Id>;
 class Group : public IGroup
 {
 public:
-    Group(const Ssid&, GroupSize, std::shared_ptr<IFactoryExecuter>);
+    Group(Ssid, GroupSize, std::shared_ptr<IFactoryExecuter>);
 
     IExecuter& getExecuter() override;
     void stopAll() override;

@@ -101,7 +101,7 @@ namespace {
 
 struct FooWithInject : Foo
 {
-    FooWithInject(const Value& p, std::shared_ptr<ILogger> l)
+    FooWithInject(Value p, std::shared_ptr<ILogger> l)
         :
           Foo{p},
           logger{std::move(l)}
@@ -130,6 +130,17 @@ TEST(DI, factory_with_inject) {
 
     auto& logger = injector.create<MockLogger&>();
     EXPECT_CALL(logger, log).Times(1);
+
+    auto factory = injector.create<std::shared_ptr<IFactoryFooWithInject>>();
+    auto foo = factory->create(Value{111});
+    EXPECT_EQ(foo->method(), 222);
+}
+
+TEST(DI, factory_with_inject2) {
+    auto injector = di::make_injector(
+        di::bind<ILogger>().to<Logger>().in(di::singleton),
+        di::bind<IFactoryFooWithInject>().to(FactoryFooWithInject{})
+    );
 
     auto factory = injector.create<std::shared_ptr<IFactoryFooWithInject>>();
     auto foo = factory->create(Value{111});

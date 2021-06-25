@@ -32,7 +32,7 @@ struct IExecuter
 class Executer : public IExecuter
 {
 public:
-    Executer(const Ssid&, const Id&, std::shared_ptr<ILogger>);
+    Executer(Ssid, Id, std::shared_ptr<ILogger>);
 
     void process(const std::string&, std::function<void(const std::string&)>) override;
     void stop() override;
