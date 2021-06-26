@@ -192,3 +192,99 @@ TEST(DI, inject_factory_einjector) {
     auto foo = eInjector.create<std::unique_ptr<FooWithFactoryBar>>();
     ASSERT_EQ(foo->method(), 5 * 2 + 42);
 }
+
+
+namespace {
+
+
+struct IE
+{
+    virtual const Id& getId() const = 0;
+    virtual const Ssid& getSsid() const = 0;
+
+    virtual ~IE() = default;
+};
+
+struct E : IE
+{
+    const Id id;
+    const Ssid ssid;
+
+    E(Id id, Ssid ssid) : id{std::move(id)}, ssid{std::move(ssid)} {}
+
+    const Id& getId() const override { return id; }
+    const Ssid& getSsid() const override { return ssid; }
+};
+
+struct IG
+{
+    virtual std::unique_ptr<IE> getE(Id) const = 0;
+    virtual ~IG() = default;
+};
+
+using IFactoryE = di::extension::ifactory<IE, Id, Ssid>;
+
+struct G : IG
+{
+    const Ssid ssid;
+    const std::shared_ptr<IFactoryE> factory;
+
+    G(Ssid ssid, std::shared_ptr<IFactoryE> f) : ssid{std::move(ssid)}, factory{std::move(f)} {}
+
+    std::unique_ptr<IE> getE(Id id) const override { return factory->create(std::move(id), Ssid{ssid}); }
+};
+
+using FactoryE = di::extension::factory<E>;
+
+
+} // Anonymous namespace
+
+
+TEST(DI, product1) {
+    auto injector = di::make_injector(
+                di::bind<IFactoryE>().to(FactoryE{}),
+                di::bind<>().to(Ssid{"ssiD"})
+    );
+
+    auto g = injector.create<std::unique_ptr<G>>();
+
+    auto e1 = g->getE(Id{"id1"});
+    EXPECT_EQ(e1->getSsid(), Ssid{"ssiD"});
+    EXPECT_EQ(e1->getId(), Id{"id1"});
+
+    auto e2 = g->getE(Id{"id2"});
+    EXPECT_EQ(e2->getSsid(), Ssid{"ssiD"});
+    EXPECT_EQ(e2->getId(), Id{"id2"});
+}
+
+
+namespace {
+
+
+using IFactoryG = di::extension::ifactory<IG, Ssid>;
+
+struct M
+{
+    std::shared_ptr<IFactoryG> factory;
+
+    M(std::shared_ptr<IFactoryG> f) : factory{std::move(f)} {}
+
+    std::unique_ptr<IG> getG(Ssid ssid) { return factory->create(std::move(ssid)); }
+};
+
+using FactoryG = di::extension::factory<G>;
+
+
+} // Anonymous namespace
+
+// Not compile
+#if 0
+TEST(DI, product2) {
+    auto injector = di::make_injector(
+                di::bind<IFactoryE>().to(FactoryE{}),
+                di::bind<IFactoryG>().to(FactoryG{})
+    );
+
+    auto m = injector.create<std::unique_ptr<M>>();
+}
+#endif
