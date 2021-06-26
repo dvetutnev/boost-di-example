@@ -146,3 +146,36 @@ TEST(DI, factory_with_inject2) {
     auto foo = factory->create(Value{111});
     EXPECT_EQ(foo->method(), 222);
 }
+
+
+namespace {
+
+
+struct FooWithFactoryBar : Foo
+{
+    FooWithFactoryBar(Value p, std::shared_ptr<IFactoryBar> f)
+        :
+          Foo{p},
+          factory{std::move(f)}
+    {}
+
+    std::size_t method() const override {
+        std::unique_ptr bar = factory->create();
+        std::size_t result = Foo::method() + bar->method();
+        return result;
+    }
+
+    std::shared_ptr<IFactoryBar> factory;
+};
+
+
+} // Anonymous namespace
+
+TEST(DI, inject_factory) {
+    auto injector = di::make_injector(
+        di::bind<IFactoryBar>().to(FactoryBar{}),
+        di::bind<Value>().to(Value{3})
+    );
+    auto foo = injector.create<std::unique_ptr<FooWithFactoryBar>>();
+    ASSERT_EQ(foo->method(), 3 * 2 + 42);
+}
