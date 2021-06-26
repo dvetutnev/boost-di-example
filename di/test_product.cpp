@@ -43,8 +43,6 @@ auto config = []() {
         di::bind<IFactoryExecuter>.to<>(FactoryExecuter{}),
         di::bind<IFactoryGroup>().to<>(FactoryGroup{}),
 
-        di::bind<Manager>().to<Manager>(),
-
         di::bind<GroupSize>().to(GroupSize{2})
     );
 };
