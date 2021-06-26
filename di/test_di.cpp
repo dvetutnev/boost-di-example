@@ -179,3 +179,16 @@ TEST(DI, inject_factory) {
     auto foo = injector.create<std::unique_ptr<FooWithFactoryBar>>();
     ASSERT_EQ(foo->method(), 3 * 2 + 42);
 }
+
+TEST(DI, inject_factory_einjector) {
+    auto injector = di::make_injector(
+        di::bind<IFactoryBar>().to(FactoryBar{}),
+        di::bind<Value>().to(Value{3})
+    );
+    auto eInjector = di::make_injector(
+        di::extension::make_extensible(injector),
+        di::bind<Value>().to(Value{5}) [di::override]
+    );
+    auto foo = eInjector.create<std::unique_ptr<FooWithFactoryBar>>();
+    ASSERT_EQ(foo->method(), 5 * 2 + 42);
+}
